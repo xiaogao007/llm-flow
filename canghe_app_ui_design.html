@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Canghe 新主题全站 UI 原型</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    :root {
+      --bg-1: #0f172a; /* slate-900 */
+      --bg-2: #1e293b; /* slate-800 */
+      --glass: rgba(255,255,255,0.08);
+      --glass-2: rgba(255,255,255,0.12);
+      --text: #e5e7eb;
+      --muted: #94a3b8;
+      --border: rgba(255,255,255,0.12);
+      --accent: #22d3ee; /* cyan-400 */
+      --accent-2: #a78bfa; /* violet-400 */
+      --accent-3: #f472b6; /* pink-400 */
+      --ok: #34d399;
+      --warn: #f59e0b;
+      --err: #ef4444;
+      --radius: 14px;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      color: var(--text);
+      background: radial-gradient(1200px 800px at 20% 20%, #0b1222, transparent),
+                  radial-gradient(1200px 800px at 80% 0%, #17112a, transparent),
+                  linear-gradient(135deg, var(--bg-1), var(--bg-2));
+    }
+    a { color: inherit; text-decoration: none; }
+    .app {
+      display: grid; grid-template-rows: 64px 1fr; height: 100vh; overflow: hidden;
+    }
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 16px; backdrop-filter: saturate(180%) blur(14px);
+      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
+      border-bottom: 1px solid var(--border);
+    }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand .logo { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-2)); display: grid; place-items: center; color: #0B1020; font-weight: 900; }
+    .brand .title { font-weight: 700; letter-spacing: 0.2px; }
+    .nav { display: flex; gap: 6px; flex-wrap: wrap; }
+    .chip {
+      height: 36px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--border);
+      background: var(--glass); color: var(--text); display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
+    }
+    .chip:hover { background: var(--glass-2); }
+    .chip.active { border-color: var(--accent); background: linear-gradient(180deg, rgba(34,211,238,0.15), rgba(255,255,255,0.06)); box-shadow: 0 0 0 2px rgba(34,211,238,0.25) inset; }
+    .main { display: grid; grid-template-columns: 240px 1fr; gap: 16px; padding: 16px; overflow: hidden; }
+    .sider { backdrop-filter: blur(12px); background: var(--glass); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; overflow: auto; }
+    .sider .group { margin-bottom: 12px; }
+    .sider .group .g-title { font-size: 12px; color: var(--muted); text-transform: uppercase; margin: 8px 6px; letter-spacing: 0.06em; }
+    .sider .item { display: flex; gap: 10px; align-items: center; padding: 10px; border-radius: 12px; border: 1px dashed var(--border); background: rgba(255,255,255,0.04); cursor: pointer; margin: 6px 0; }
+    .sider .item:hover { border-style: solid; background: rgba(255,255,255,0.08); }
+    .content { backdrop-filter: blur(10px); background: var(--glass); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; position: relative; }
+    .page { display: none; height: 100%; }
+    .page.active { display: grid; grid-template-rows: auto 1fr; }
+
+    /* Section head */
+    .section-head { padding: 14px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .section-title { display: flex; align-items: center; gap: 10px; font-weight: 600; }
+    .section-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .btn { height: 36px; padding: 0 12px; border-radius: 10px; border: 1px solid var(--border); background: rgba(255,255,255,0.06); color: var(--text); display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
+    .btn:hover { background: rgba(255,255,255,0.12); }
+    .btn.primary { border-color: var(--accent); background: linear-gradient(180deg, rgba(34,211,238,0.25), rgba(255,255,255,0.06)); }
+    .btn.warn { border-color: var(--warn); }
+
+    /* Cards / grids */
+    .grid { padding: 16px; display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; overflow: auto; }
+    .card { grid-column: span 3; background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; }
+    .card .card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+    .card .card-title { font-weight: 600; }
+    .kpi { grid-column: span 3; padding: 14px; border-radius: var(--radius); border: 1px solid var(--border); background: linear-gradient(135deg, rgba(167,139,250,0.16), rgba(34,211,238,0.12)); }
+
+    /* Tables */
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 10px; border-bottom: 1px solid var(--border); text-align: left; font-size: 14px; }
+    th { color: var(--muted); font-weight: 500; }
+
+    /* Forms */
+    .form { padding: 16px; display: grid; grid-template-columns: repeat(12, 1fr); gap: 12px; overflow: auto; }
+    .field { grid-column: span 6; display: flex; flex-direction: column; gap: 6px; }
+    .field label { font-size: 12px; color: var(--muted); }
+    .input, select, textarea { height: 38px; padding: 0 10px; border-radius: 10px; border: 1px solid var(--border); background: rgba(255,255,255,0.06); color: var(--text); outline: none; }
+    textarea { height: auto; padding: 10px; }
+    .input:focus, select:focus, textarea:focus { box-shadow: 0 0 0 2px rgba(34,211,238,0.25) inset; }
+
+    /* Chat */
+    .chat { display: grid; grid-template-columns: 280px 1fr 320px; gap: 12px; padding: 12px; height: 100%; }
+    .chat-panel { border: 1px solid var(--border); border-radius: var(--radius); background: rgba(255,255,255,0.06); overflow: hidden; display: flex; flex-direction: column; }
+    .chat-list { flex: 1; overflow: auto; }
+    .chat-item { padding: 10px 12px; border-bottom: 1px solid var(--border); cursor: pointer; }
+    .chat-item:hover { background: rgba(255,255,255,0.08); }
+    .chat-main { display: grid; grid-template-rows: auto 1fr auto; }
+    .chat-msgs { padding: 12px; overflow: auto; display: flex; flex-direction: column; gap: 10px; }
+    .bubble { max-width: 70%; padding: 10px 12px; border-radius: 12px; backdrop-filter: blur(8px); }
+    .bubble.user { align-self: flex-end; background: linear-gradient(135deg, rgba(34,211,238,0.3), rgba(255,255,255,0.08)); }
+    .bubble.ai { align-self: flex-start; background: linear-gradient(135deg, rgba(167,139,250,0.24), rgba(255,255,255,0.08)); }
+    .chat-input { display: flex; gap: 8px; padding: 10px; border-top: 1px solid var(--border); }
+    .chat-input textarea { flex: 1; }
+
+    /* Flow */
+    .flow { display: grid; grid-template-columns: 280px 1fr; gap: 12px; padding: 12px; height: 100%; }
+    .flow-canvas { border: 1px dashed var(--border); border-radius: var(--radius); position: relative; overflow: hidden; background: rgba(255,255,255,0.04); }
+    .node { position: absolute; min-width: 160px; border: 1px solid var(--border); border-radius: 12px; background: rgba(255,255,255,0.06); box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
+    .node .nh { padding: 8px 10px; border-bottom: 1px dashed var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .node .nb { padding: 10px; color: var(--muted); }
+
+    /* Hidden login fullpage */
+    .login-page { display: none; height: 100vh; place-items: center; padding: 20px; }
+    .login-card { width: 420px; max-width: 92vw; border: 1px solid var(--border); border-radius: 16px; backdrop-filter: blur(16px); background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04)); padding: 16px; }
+
+    /* Utilities */
+    .row { display: flex; gap: 8px; align-items: center; }
+    .muted { color: var(--muted); }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 12px; }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <div class="login-page" id="page-login">
+    <div class="login-card">
+      <div class="row" style="justify-content:center; margin-bottom: 8px;">
+        <div class="logo" style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--accent-2),var(--accent-3));display:grid;place-items:center;color:#0B1020;font-weight:900">C</div>
+      </div>
+      <h2 style="margin:8px 0 2px; text-align:center;">Canghe 平台</h2>
+      <p class="muted" style="text-align:center;margin:0 0 12px;">午夜玻璃风 · 新主题</p>
+      <div class="form" style="grid-template-columns: 1fr; padding: 0;">
+        <div class="field"><label>邮箱</label><input class="input" type="email" placeholder="you@example.com" /></div>
+        <div class="field"><label>密码</label><input class="input" type="password" placeholder="••••••••" /></div>
+        <div class="row" style="justify-content: space-between;">
+          <label class="row muted" style="gap:6px;"><input type="checkbox" /> 记住我</label>
+          <a class="muted" href="#">忘记密码？</a>
+        </div>
+        <div class="row" style="justify-content:flex-end; margin-top: 4px;">
+          <button class="btn primary" onclick="enterApp()"><i class="fa fa-right-to-bracket"></i> 登录</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="app" id="app" style="display:none;">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo">C</div>
+        <div>
+          <div class="title">Canghe 智能平台</div>
+          <div class="muted" style="font-size:12px;">Midnight Glass Theme</div>
+        </div>
+      </div>
+      <nav class="nav" id="nav">
+        <button class="chip active" data-page="home"><i class="fa fa-house"></i> 首页</button>
+        <button class="chip" data-page="chat"><i class="fa fa-comments"></i> 聊天</button>
+        <button class="chip" data-page="flow"><i class="fa fa-diagram-project"></i> 流程</button>
+        <button class="chip" data-page="datasets"><i class="fa fa-database"></i> 数据集</button>
+        <button class="chip" data-page="files"><i class="fa fa-folder-open"></i> 文件</button>
+        <button class="chip" data-page="knowledge"><i class="fa fa-book"></i> 知识</button>
+        <button class="chip" data-page="agents"><i class="fa fa-robot"></i> Agent</button>
+        <button class="chip" data-page="search"><i class="fa fa-magnifying-glass"></i> 搜索</button>
+        <button class="chip" data-page="api"><i class="fa fa-key"></i> API</button>
+        <button class="chip" data-page="settings"><i class="fa fa-gear"></i> 设置</button>
+        <button class="chip" data-page="profile"><i class="fa fa-user"></i> 个人</button>
+        <button class="chip" onclick="showLogin()"><i class="fa fa-right-from-bracket"></i> 退出</button>
+      </nav>
+    </header>
+
+    <main class="main">
+      <aside class="sider">
+        <div class="group">
+          <div class="g-title">快速入口</div>
+          <div class="item" onclick="goto('chat')"><i class="fa fa-comments"></i> 开始聊天</div>
+          <div class="item" onclick="goto('flow')"><i class="fa fa-diagram-project"></i> 新建流程</div>
+          <div class="item" onclick="goto('datasets')"><i class="fa fa-database"></i> 管理数据集</div>
+        </div>
+        <div class="group">
+          <div class="g-title">近期项目</div>
+          <div class="item"><i class="fa fa-robot"></i> FAQ 助理</div>
+          <div class="item"><i class="fa fa-diagram-project"></i> 法务RAG流程</div>
+          <div class="item"><i class="fa fa-diagram-project"></i> 客服自动化</div>
+        </div>
+        <div class="group">
+          <div class="g-title">帮助</div>
+          <div class="item"><i class="fa fa-book"></i> 文档中心</div>
+          <div class="item"><i class="fa fa-circle-question"></i> 支持与反馈</div>
+        </div>
+      </aside>
+
+      <section class="content">
+        <!-- 首页 -->
+        <div class="page active" id="page-home">
+          <div class="section-head">
+            <div class="section-title"><i class="fa fa-house"></i> 概览</div>
+            <div class="section-actions">
+              <button class="btn primary" onclick="goto('flow')"><i class="fa fa-plus"></i> 新建工作流</button>
+              <button class="btn" onclick="goto('agents')"><i class="fa fa-robot"></i> 创建 Agent</button>
+            </div>
+          </div>
+          <div class="grid">
+            <div class="kpi">
+              <div class="row" style="justify-content: space-between;">
+                <div>
+                  <div class="muted">会话总量</div>
+                  <div style="font-size:24px; font-weight:700;">12,384</div>
+                </div>
+                <i class="fa fa-comments" style="color:var(--accent);"></i>
+              </div>
+            </div>
+            <div class="kpi">
+              <div class="row" style="justify-content: space-between;">
+                <div>
+                  <div class="muted">知识库文档</div>
+                  <div style="font-size:24px; font-weight:700;">2,157</div>
+                </div>
+                <i class="fa fa-book" style="color:var(--accent-2);"></i>
+              </div>
+            </div>
+            <div class="kpi">
+              <div class="row" style="justify-content: space-between;">
+                <div>
+                  <div class="muted">活跃流程</div>
+                  <div style="font-size:24px; font-weight:700;">17</div>
+                </div>
+                <i class="fa fa-diagram-project" style="color:var(--accent-3);"></i>
+              </div>
+            </div>
+            <div class="kpi">
+              <div class="row" style="justify-content: space-between;">
+                <div>
+                  <div class="muted">平均响应(ms)</div>
+                  <div style="font-size:24px; font-weight:700;">812</div>
+                </div>
+                <i class="fa fa-gauge" style="color:var(--ok);"></i>
+              </div>
+            </div>
+
+            <div class="card" style="grid-column: span 8;">
+              <div class="card-head">
+                <div class="card-title">使用趋势</div>
+                <div class="muted mono">(图表占位)</div>
+              </div>
+              <div style="height: 220px; border:1px dashed var(--border); border-radius: 10px;"></div>
+            </div>
+            <div class="card" style="grid-column: span 4;">
+              <div class="card-head"><div class="card-title">最近运行</div></div>
+              <table>
+                <thead><tr><th>名称</th><th>状态</th><th>时间</th></tr></thead>
+                <tbody>
+                  <tr><td>客服自动化</td><td><span class="muted">完成</span></td><td>12:03</td></tr>
+                  <tr><td>财务问答</td><td><span class="muted">完成</span></td><td>11:58</td></tr>
+                  <tr><td>法务RAG</td><td><span class="muted">失败</span></td><td>11:40</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 聊天 -->
+        <div class="page" id="page-chat">
+          <div class="section-head">
+            <div class="section-title"><i class="fa fa-comments"></i> 聊天</div>
+            <div class="section-actions">
+              <button class="btn"><i class="fa fa-plus"></i> 新建会话</button>
+              <button class="btn"><i class="fa fa-share-nodes"></i> 分享</button>
+            </div>
+          </div>
+          <div class="chat">
+            <div class="chat-panel">
+              <div class="row" style="padding: 10px; gap: 8px; border-bottom: 1px solid var(--border);">
+                <i class="fa fa-magnifying-glass muted"></i>
+                <input class="input" placeholder="搜索会话" style="flex:1;">
+              </div>
+              <div class="chat-list" id="chat-list">
+                <div class="chat-item">FAQ 助理</div>
+                <div class="chat-item">法务问答</div>
+                <div class="chat-item">客服自动化</div>
+              </div>
+            </div>
+            <div class="chat-panel chat-main">
+              <div class="row" style="padding:10px; gap: 8px; border-bottom:1px solid var(--border);">
+                <div class="muted">与 <b>FAQ 助理</b> 对话</div>
+                <span class="chip" style="margin-left:auto"><i class="fa fa-robot"></i> GPT-4o</span>
+              </div>
+              <div class="chat-msgs" id="chat-msgs">
+                <div class="bubble ai">您好，我是 FAQ 助理，有什么可以帮助的？</div>
+                <div class="bubble user">帮我介绍一下你们的付费方案</div>
+                <div class="bubble ai">我们提供基础版与企业版，支持月付与年付……</div>
+              </div>
+              <div class="chat-input">
+                <textarea rows="3" id="chat-input" placeholder="输入内容... (Enter 发送, Shift+Enter 换行)"></textarea>
+                <button class="btn primary" onclick="sendMsg()"><i class="fa fa-paper-plane"></i></button>
+              </div>
+            </div>
+            <div class="chat-panel">
+              <div class="row" style="padding:10px; gap:8px; border-bottom:1px solid var(--border);">
+                <div class="muted">上下文</div>
+                <span class="chip" style="margin-left:auto"><i class="fa fa-rotate"></i> 重置</span>
+              </div>
+              <div style="padding: 10px; overflow:auto;">
+                <div class="muted" style="margin-bottom:6px;">消息窗口: 12</div>
+                <div class="muted">引用来源 (References):</div>
+                <ul class="mono" style="font-size:12px; line-height: 1.6;">
+                  <li>docs/price.md#pricing</li>
+                  <li>faq/billing.md#invoice</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 流程（工作流） -->
+        <div class="page" id="page-flow">
+          <div class="section-head">
+            <div class="section-title"><i class="fa fa-diagram-project"></i> 工作流编排</div>
+            <div class="section-actions">
+              <button class="btn"><i class="fa fa-file-import"></i> 导入</button>
+              <button class="btn"><i class="fa fa-file-export"></i> 导出</button>
+              <button class="btn primary"><i class="fa fa-floppy-disk"></i> 保存</button>
+              <button class="btn"><i class="fa fa-play"></i> 运行</button>
+            </div>
+          </div>
+          <div class="flow">
+            <div class="sider" style="height: 100%;">
+              <div class="group"><div class="g-title">系统</div>
+                <div class="item"><i class="fa fa-flag-checkered"></i> Begin</div>
+                <div class="item"><i class="fa fa-message"></i> Message</div>
+              </div>
+              <div class="group"><div class="g-title">RAG / LLM</div>
+                <div class="item"><i class="fa fa-magnifying-glass"></i> Retrieval</div>
+                <div class="item"><i class="fa fa-wand-magic-sparkles"></i> Generate</div>
+              </div>
+              <div class="group"><div class="g-title">逻辑</div>
+                <div class="item"><i class="fa fa-database"></i> Categorize</div>
+                <div class="item"><i class="fa fa-code-branch"></i> Switch</div>
+              </div>
+              <div class="group"><div class="g-title">工具</div>
+                <div class="item"><i class="fa fa-scroll"></i> Template</div>
+                <div class="item"><i class="fa fa-plug"></i> Invoke</div>
+                <div class="item"><i class="fa fa-envelope"></i> Email</div>
+              </div>
+            </div>
+            <div class="flow-canvas" id="flow-canvas">
+              <div class="node" style="left:80px; top:100px;">
+                <div class="nh">
+                  <div class="row"><i class="fa fa-flag-checkered" style="color:var(--accent)"></i> Begin</div>
+                  <div class="row">
+                    <button class="btn" style="height:28px; padding: 0 8px;"><i class="fa fa-sliders"></i></button>
+                  </div>
+                </div>
+                <div class="nb"><b>欢迎提示</b><div class="muted" style="margin-top:4px;">你好！我是你的助理……</div></div>
+              </div>
+              <div class="node" style="left:340px; top:100px;">
+                <div class="nh">
+                  <div class="row"><i class="fa fa-magnifying-glass" style="color:var(--accent-2)"></i> Retrieval</div>
+                  <button class="btn" style="height:28px; padding: 0 8px;"><i class="fa fa-sliders"></i></button>
+                </div>
+                <div class="nb"><b>检索</b><div class="muted" style="margin-top:4px;">KB: 产品手册、FAQ</div></div>
+              </div>
+              <div class="node" style="left:600px; top:100px;">
+                <div class="nh">
+                  <div class="row"><i class="fa fa-wand-magic-sparkles" style="color:var(--accent-3)"></i> Generate</div>
+                  <button class="btn" style="height:28px; padding: 0 8px;"><i class="fa fa-sliders"></i></button>
+                </div>
+                <div class="nb"><b>生成草稿</b><div class="muted" style="margin-top:4px;">引用、风格、长度…</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 数据集列表 -->
+        <div class="page" id="page-datasets">
+          <div class="section-head">
+            <div class="section-title"><i class="fa fa-database"></i> 数据集</div>
+            <div class="section-actions">
+              <button class="btn primary"><i class="fa fa-plus"></i> 新建数据集</button>
+            </div>
+          </div>
+          <div class="grid">
+            <div class="card"><div class="card-head"><div class="card-title">FAQ 文档</div><span class="muted">123 篇</span></div><div class="muted">企业常见问题</div></div>
+            <div class="card"><div class="card-head"><div class="card-title">产品手册</div><span class="muted">58 篇</span></div><div class="muted">硬件/软件安装</div></div>
+            <div class="card"><div class="card-head"><div class="card-title">法务条款</div><span class="muted">37 篇</span></div><div class="muted">合同/隐私/免责声明</div></div>
+            <div class="card"><div class="card-head"><div class="card-title">财务报销</div><span class="muted">21 篇</span></div><div class="muted">流程与模板</div></div>
+          </div>
+        </div>
+
+        <!-- 文件管理 -->
+        <div class="page" id="page-files">
+          <div class="section-head">
+            <div class="section-title"><i class="fa fa-folder-open"></i> 文件</div>
+            <div class="section-actions">
+              <button class="btn"><i class="fa fa-upload"></i> 上传</button>
+              <button class="btn"><i class="fa fa-folder-plus"></i> 新建文件夹</button>
+            </div>
+          </div>
+          <div class="grid" style="grid-template-columns: repeat(12, 1fr);">
+            <div class="card" style="grid-column: span 12;">
+              <table>
+                <thead><tr><th>名称</th><th>类型</th><th>大小</th><th>更新时间</th><th>操作</th></tr></thead>
+                <tbody>
+                  <tr><td>pricing.md</td><td>Markdown</td><td>12 KB</td><td>今天 12:00</td><td><button class="btn">预览</button> <button class="btn">删除</button></td></tr>
+                  <tr><td>faq.pdf</td><td>PDF</td><td>234 KB</td><td>昨天 09:33</td><td><button class="btn">预览</button> <button class="btn warn">移除</button></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 知识 -->
+        <div class="page" id="page-knowledge">
+          <div class="section-head">
+            <div class="section-title"><i class="fa fa-book"></i> 知识</div>
+            <div class="section-actions">
+              <button class="btn"><i class="fa fa-plug"></i> 连接知识源</button>
+            </div>
+          </div>
+          <div class="grid">
+            <div class="card"><div class="card-head"><div class="card-title">企业知识库</div><span class="muted">MySQL</span></div><div class="muted">生产</div></div>
+            <div class="card"><div class="card-head"><div class="card-title">外部文档</div><span class="muted">S3</span></div><div class="muted">公共</div></div>
+            <div class="card"><div class="card-head"><div class="card-title">内网Wiki</div><span class="muted">Confluence</span></div><div class="muted">内部</div></div>
+          </div>
+        </div>
+
+        <!-- Agents -->
+        <div class="page" id="page-agents">
+          <div class="section-head">
+            <div class="section-title"><i class="fa fa-robot"></i> Agent</div>
+            <div class="section-actions">
+              <button class="btn primary"><i class="fa fa-plus"></i> 新建 Agent</button>
+            </div>
+          </div>
+          <div class="grid">
+            <div class="card"><div class="card-head"><div class="card-title">FAQ 助理</div><span class="muted">模板：客服</span></div><div class="muted">自动解答常见问题</div></div>
+            <div class="card"><div class="card-head"><div class="card-title">法务助理</div><span class="muted">模板：法务</span></div><div class="muted">法律条款问答</div></div>
+            <div class="card"><div class="card-head"><div class="card-title">报销助手</div><span class="muted">模板：财务</span></div><div class="muted">流程引导</div></div>
+            <div class="card"><div class="card-head"><div class="card-title">销售助理</div><span class="muted">模板：销售</span></div><div class="muted">线索跟进</div></div>
+          </div>
+        </div>
+
+        <!-- 搜索 -->
+        <div class="page" id="page-search">
+          <div class="section-head">
+            <div class="section-title"><i class="fa fa-magnifying-glass"></i> 搜索</div>
+            <div class="section-actions">
+              <button class="btn"><i class="fa fa-filter"></i> 筛选</button>
+            </div>
+          </div>
+          <div class="form">
+            <div class="field" style="grid-column: span 8;"><label>关键词</label><input class="input" placeholder="请输入关键词"/></div>
+            <div class="field" style="grid-column: span 2;"><label>类型</label><select><option>全部</option><option>文档</option><option>对话</option><option>流程</option></select></div>
+            <div class="field" style="grid-column: span 2;"><label>&nbsp;</label><button class="btn primary" style="width:100%">搜索</button></div>
+          </div>
+          <div class="grid">
+            <div class="card" style="grid-column: span 12;">
+              <table>
+                <thead><tr><th>标题</th><th>类型</th><th>描述</th><th>更新时间</th></tr></thead>
+                <tbody>
+                  <tr><td>pricing.md</td><td>文档</td><td>订阅价格说明</td><td>今天</td></tr>
+                  <tr><td>FAQ 助理</td><td>对话</td><td>近期会话</td><td>昨天</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 设置 -->
+        <div class="page" id="page-settings">
+          <div class="section-head">
+            <div class="section-title"><i class="fa fa-gear"></i> 设置</div>
+            <div class="section-actions">
+              <button class="btn primary"><i class="fa fa-floppy-disk"></i> 保存设置</button>
+            </div>
+          </div>
+          <div class="form">
+            <div class="field"><label>默认模型</label><select><option>GPT-4o</option><option>Qwen</option><option>Claude</option></select></div>
+            <div class="field"><label>温度 (temperature)</label><input class="input" type="number" step="0.1" value="0.2"></div>
+            <div class="field"><label>Top P</label><input class="input" type="number" step="0.1" value="0.9"></div>
+            <div class="field" style="grid-column: span 12;"><label>系统提示词</label><textarea rows="5" placeholder="你是一个专业助理..."></textarea></div>
+          </div>
+        </div>
+
+        <!-- 个人 -->
+        <div class="page" id="page-profile">
+          <div class="section-head">
+            <div class="section-title"><i class="fa fa-user"></i> 个人资料</div>
+            <div class="section-actions">
+              <button class="btn primary"><i class="fa fa-floppy-disk"></i> 保存</button>
+            </div>
+          </div>
+          <div class="form">
+            <div class="field"><label>昵称</label><input class="input" value="canghe"/></div>
+            <div class="field"><label>邮箱</label><input class="input" type="email" value="canghe@example.com"/></div>
+            <div class="field"><label>语言</label><select><option>中文</option><option>English</option></select></div>
+            <div class="field"><label>主题</label><select><option>午夜玻璃风</option><option>亮色</option></select></div>
+          </div>
+        </div>
+
+        <!-- API -->
+        <div class="page" id="page-api">
+          <div class="section-head">
+            <div class="section-title"><i class="fa fa-key"></i> API & SDK</div>
+            <div class="section-actions">
+              <button class="btn"><i class="fa fa-plus"></i> 新建密钥</button>
+              <button class="btn"><i class="fa fa-book"></i> 文档</button>
+            </div>
+          </div>
+          <div class="grid">
+            <div class="card" style="grid-column: span 12;">
+              <table>
+                <thead><tr><th>名称</th><th>Key</th><th>权限</th><th>创建时间</th><th>操作</th></tr></thead>
+                <tbody>
+                  <tr><td>frontend</td><td class="mono">sk_live_************abcd</td><td>read</td><td>2025-08-20</td><td><button class="btn">复制</button> <button class="btn warn">禁用</button></td></tr>
+                  <tr><td>backend</td><td class="mono">sk_live_************wxyz</td><td>read/write</td><td>2025-08-10</td><td><button class="btn">复制</button> <button class="btn warn">禁用</button></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="card" style="grid-column: span 12;">
+              <div class="card-head"><div class="card-title">示例</div></div>
+              <pre class="mono" style="white-space: pre-wrap; background: rgba(0,0,0,0.25); padding: 12px; border-radius: 10px;">curl -X POST https://api.canghe.ai/v1/chat \
+  -H "Authorization: Bearer sk_live_..." \
+  -H "Content-Type: application/json" \
+  -d '{"messages":[{"role":"user","content":"hello"}]}'</pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- 404 -->
+        <div class="page" id="page-404">
+          <div class="section-head"><div class="section-title"><i class="fa fa-triangle-exclamation"></i> 页面不存在</div></div>
+          <div class="grid">
+            <div class="card" style="grid-column: span 12; text-align:center;">
+              <h2 style="margin: 10px 0;">404</h2>
+              <p class="muted">抱歉，页面不存在</p>
+              <div style="margin-top:10px;">
+                <button class="btn primary" onclick="goto('home')">返回首页</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const $ = (s) => document.querySelector(s);
+    const $$ = (s) => document.querySelectorAll(s);
+
+    function showLogin() {
+      $('#app').style.display = 'none';
+      $('#page-login').style.display = 'grid';
+    }
+    function enterApp() {
+      $('#page-login').style.display = 'none';
+      $('#app').style.display = 'grid';
+    }
+
+    // init default: show login then enter app for preview
+    enterApp();
+
+    function goto(page) {
+      $$('#nav .chip').forEach(el => el.classList.toggle('active', el.dataset.page === page));
+      $$('#page-home, #page-chat, #page-flow, #page-datasets, #page-files, #page-knowledge, #page-agents, #page-search, #page-settings, #page-profile, #page-api, #page-404')
+        .forEach(el => el.classList.remove('active'));
+      const pid = `#page-${page}`;
+      const target = $(pid) || $('#page-404');
+      target.classList.add('active');
+    }
+
+    // nav click binding
+    $$('#nav .chip[data-page]').forEach(el => {
+      el.addEventListener('click', () => goto(el.dataset.page));
+    });
+
+    // Chat send
+    function sendMsg() {
+      const input = $('#chat-input');
+      const text = (input.value || '').trim();
+      if (!text) return;
+      const wrap = $('#chat-msgs');
+      const u = document.createElement('div');
+      u.className = 'bubble user'; u.textContent = text;
+      wrap.appendChild(u); input.value = '';
+      setTimeout(() => { const a = document.createElement('div'); a.className = 'bubble ai'; a.textContent = '示例回复：' + text; wrap.appendChild(a); wrap.scrollTop = wrap.scrollHeight; }, 400);
+      wrap.scrollTop = wrap.scrollHeight;
+    }
+    window.sendMsg = sendMsg;
+
+    // keyboard send
+    $('#page-chat').addEventListener('keydown', (e) => {
+      if (e.target.id === 'chat-input') {
+        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }
+      }
+    });
+
+    // default route
+    goto('home');
+  </script>
+</body>
+</html> 
