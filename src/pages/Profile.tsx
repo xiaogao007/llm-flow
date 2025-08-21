@@ -8,8 +8,8 @@ export default function Profile() {
         </div>
       </div>
       <div className="form">
-        <div className="field"><label>昵称</label><input className="input" defaultValue="canghe"/></div>
-        <div className="field"><label>邮箱</label><input className="input" type="email" defaultValue="canghe@example.com"/></div>
+        <div className="field"><label>昵称</label><input className="input" defaultValue="EasyFlow"/></div>
+        <div className="field"><label>邮箱</label><input className="input" type="email" defaultValue="EasyFlow@example.com"/></div>
         <div className="field"><label>语言</label><select><option>中文</option><option>English</option></select></div>
         <div className="field"><label>主题</label><select><option>午夜玻璃风</option><option>亮色</option></select></div>
       </div>

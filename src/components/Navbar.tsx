@@ -6,7 +6,7 @@ export default function Navbar() {
       <div className="brand">
         <div className="logo">C</div>
         <div>
-          <div className="title">Canghe 智能平台</div>
+          <div className="title">EasyFlow 智能平台</div>
           <div className="muted" style={{ fontSize: 12 }}>Midnight Glass Theme</div>
         </div>
       </div>

@@ -20,7 +20,7 @@ export default function Api() {
         </div>
         <div className="card" style={{ gridColumn: 'span 12' }}>
           <div className="card-head"><div className="card-title">示例</div></div>
-          <pre className="mono" style={{ whiteSpace: 'pre-wrap', background: 'rgba(0,0,0,0.25)', padding: 12, borderRadius: 10 }}>{`curl -X POST https://api.canghe.ai/v1/chat \
+          <pre className="mono" style={{ whiteSpace: 'pre-wrap', background: 'rgba(0,0,0,0.25)', padding: 12, borderRadius: 10 }}>{`curl -X POST https://api.EasyFlow.ai/v1/chat \
   -H "Authorization: Bearer sk_live_..." \
   -H "Content-Type: application/json" \
   -d '{"messages":[{"role":"user","content":"hello"}]}'`}</pre>
